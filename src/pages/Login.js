@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import fetchToken from '../services/api';
 
 class Login extends Component {
   state = {
@@ -11,6 +12,14 @@ class Login extends Component {
       [target.name]: target.value,
     });
   };
+
+  btnChange = async () => {
+    const { history } = this.props;
+    const tokenApi = await fetchToken();
+    const { token } = tokenApi;
+    localStorage.setItem('token', token);
+    history.push('/game');
+  }
 
   render() {
     const { name, email } = this.state;
@@ -32,6 +41,7 @@ class Login extends Component {
           type="button"
           data-testid="btn-play"
           disabled={ !(name && email) }
+          onClick={ this.btnChange }
         >
           Play
         </button>
