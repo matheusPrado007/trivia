@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import Header from '../components/Header';
 
 class Game extends React.Component {
   state = {
@@ -32,7 +33,7 @@ class Game extends React.Component {
 
   render() {
     return (
-      <div> </div>
+            <Header />
     );
   }
 }
