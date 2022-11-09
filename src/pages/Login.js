@@ -1,4 +1,8 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
+import fetchToken from '../services/api';
+import { actionCreator, LOGIN_INICIAL } from '../redux/actions';
 
 class Login extends Component {
   state = {
@@ -10,6 +14,15 @@ class Login extends Component {
     this.setState({
       [target.name]: target.value,
     });
+  };
+
+  btnChange = async () => {
+    const { history, dispatch } = this.props;
+    const tokenApi = await fetchToken();
+    const { token } = tokenApi;
+    localStorage.setItem('token', token);
+    dispatch(actionCreator(LOGIN_INICIAL, this.state));
+    history.push('/game');
   };
 
   render() {
@@ -32,6 +45,7 @@ class Login extends Component {
           type="button"
           data-testid="btn-play"
           disabled={ !(name && email) }
+          onClick={ this.btnChange }
         >
           Play
         </button>
@@ -40,4 +54,11 @@ class Login extends Component {
   }
 }
 
-export default Login;
+Login.propTypes = {
+  history: PropTypes.shape({
+    push: PropTypes.func,
+  }),
+  dispatch: PropTypes.func,
+}.isRequired;
+
+export default connect(null)(Login);
