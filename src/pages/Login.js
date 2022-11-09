@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import fetchToken from '../services/api';
+import { actionCreator, LOGIN_INICIAL } from '../redux/actions';
+import { connect } from 'react-redux';
 
 class Login extends Component {
   state = {
@@ -14,10 +16,11 @@ class Login extends Component {
   };
 
   btnChange = async () => {
-    const { history } = this.props;
+    const { history, dispatch } = this.props;
     const tokenApi = await fetchToken();
     const { token } = tokenApi;
     localStorage.setItem('token', token);
+    dispatch(actionCreator(LOGIN_INICIAL, this.state));
     history.push('/game');
   }
 
@@ -50,4 +53,4 @@ class Login extends Component {
   }
 }
 
-export default Login;
+export default connect(null)(Login);
