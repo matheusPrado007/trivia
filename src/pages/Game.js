@@ -19,31 +19,23 @@ class Game extends React.Component {
     const { history: { push } } = this.props;
     const request = await fetch(`https://opentdb.com/api.php?amount=5&token=${token}`);
     const data = await request.json();
-    console.log(data.results);
-    const answersList = [
-      ...data.results[0].incorrect_answers, data.results[0].correct_answer,
-    ];
-    console.log(answersList);
-    const randomAnswers = this.randomAnswers(answersList);
     this.setState({
       response: data.response_code,
       results: data.results,
-      answers: randomAnswers,
     }, () => {
       const { response, results } = this.state;
       if (response !== 0) {
         localStorage.clear('token');
         push('/');
+      } else {
+        const answersList = [
+          ...data.results[0].incorrect_answers, data.results[0].correct_answer,
+        ];
+        const randomAux = 0.5;
+        const randomAnswers = answersList.sort(() => Math.random() - randomAux);
+        this.setState({ answers: randomAnswers });
       } return results;
     });
-  };
-
-  randomAnswers = (answer) => {
-    for (let i = answer.length - 1; i >= 0; i -= 1) {
-      const random = Math.r(Math.random() * (i + 1));
-      [answer[i], answer[random]] = [answer[random], answer[i]];
-    }
-    return answer;
   };
 
   render() {
