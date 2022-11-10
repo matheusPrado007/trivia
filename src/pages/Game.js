@@ -8,6 +8,7 @@ class Game extends React.Component {
     response: '',
     results: [],
     answers: [],
+    check: false,
   };
 
   componentDidMount() {
@@ -38,8 +39,15 @@ class Game extends React.Component {
     });
   };
 
+  handleBtn = () => {
+    const { check } = this.state;
+    if (check === false) {
+      return this.setState({ check: true });
+    }
+  };
+
   render() {
-    const { results, answers } = this.state;
+    const { results, answers, check } = this.state;
     return (
       <>
         <Header />
@@ -54,6 +62,7 @@ class Game extends React.Component {
                     key={ result }
                     type="button"
                     data-testid="answer-options"
+                    onClick={ this.handleBtn }
                   >
                     {
                       result !== results[0]
@@ -68,6 +77,15 @@ class Game extends React.Component {
                   </button>
                 )) }
               </p>
+              {check
+                && (
+                  <button
+                    type="button"
+                    data-testid="btn-next"
+                  >
+                    Next
+                  </button>
+                )}
             </div>
           ) }
         </div>
