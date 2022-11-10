@@ -20,7 +20,11 @@ class Header extends Component {
     const { name, score } = this.props;
     return (
       <header>
-        <img src={ linkImagem } alt="Imagem do jogador" />
+        <img
+          data-testid="header-profile-picture"
+          src={ linkImagem }
+          alt="Imagem do jogador"
+        />
         <p data-testid="header-player-name">{ name }</p>
         <p data-testid="header-score">{ score }</p>
       </header>
