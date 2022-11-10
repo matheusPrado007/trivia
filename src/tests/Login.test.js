@@ -6,7 +6,7 @@ import { renderWithRouterAndRedux } from './helpers/renderWithRouterAndRedux';
 import App from '../App';
 
 describe('Pagina de Login', () => {
-  test('1- Verificar se ao carregar a pagina Login, contêm dois inputs e o button', () => {
+  test('1- Verificar se ao carregar a pagina Login, contêm dois inputs e o button', async () => {
     const { history } = renderWithRouterAndRedux(<App />);
 
     act(() => {
@@ -22,18 +22,21 @@ describe('Pagina de Login', () => {
 
     const inputPlayerName = screen.getByTestId('input-player-name');
     expect(inputPlayerName).toBeInTheDocument();
-
     userEvent.type(inputPlayerName, 'Joaozinho');
+    expect(inputPlayerName.value).toBe('Joaozinho');
 
     const inputEmail = screen.getByTestId('input-gravatar-email');
     expect(inputEmail).toBeInTheDocument();
-
     userEvent.type(inputEmail, 'Joaozinho@trybe.com');
     expect(inputEmail.value).toBe('Joaozinho@trybe.com');
 
     expect(button).toHaveProperty('disabled', false);
 
+    expect(button).toBeInTheDocument();
     userEvent.click(button);
-    // expect(history.location.pathname).toBe('/game');
+    
+    const name = screen.findByText('Joaozinho');
+    expect(await name).toBeInTheDocument();
+    expect(history.location.pathname).toBe('/game');
   });
 });
