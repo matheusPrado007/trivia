@@ -8,6 +8,7 @@ class Game extends React.Component {
     response: '',
     results: [],
     answers: [],
+    check: false,
   };
 
   componentDidMount() {
@@ -66,6 +67,11 @@ class Game extends React.Component {
   };
 
   answerBtn = ({ target }) => {
+    const { check } = this.state;
+    if (check === false) {
+      this.setState({ check: true });
+    }
+    
     if (target.className.includes('answer')) {
       this.ownColor(target);
     } else {
@@ -74,7 +80,7 @@ class Game extends React.Component {
   };
 
   render() {
-    const { results, answers } = this.state;
+    const { results, answers, check } = this.state;
     return (
       <>
         <Header />
@@ -113,6 +119,15 @@ class Game extends React.Component {
                   </button>
                 )) }
               </p>
+              {check
+                && (
+                  <button
+                    type="button"
+                    data-testid="btn-next"
+                  >
+                    Next
+                  </button>
+                )}
             </div>
           ) }
         </div>
