@@ -40,7 +40,7 @@ class Game extends React.Component {
 
   randomAnswers = (answer) => {
     for (let i = answer.length - 1; i >= 0; i -= 1) {
-      const random = Math.floor(Math.random() * (i + 1));
+      const random = Math.r(Math.random() * (i + 1));
       [answer[i], answer[random]] = [answer[random], answer[i]];
     }
     return answer;
