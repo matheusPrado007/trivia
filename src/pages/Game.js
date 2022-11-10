@@ -41,8 +41,6 @@ class Game extends React.Component {
     }, () => { this.endInterval(); });
   };
 
-  fetchQuestions = async (token) => {
-
   responseValidation = () => {
     const { history: { push } } = this.props;
     const { response, results } = this.state;
@@ -70,24 +68,17 @@ class Game extends React.Component {
   };
 
   validateColor = (btn) => {
-    if (btn.firstChild.className.includes('wrong')) {
-      btn.firstChild.style.border = '3px solid';
-      btn.firstChild.style.borderColor = 'red';
+    if (btn.className.includes('wrong')) {
+      btn.style.border = '3px solid';
+      btn.style.borderColor = 'red';
     } else {
-      btn.firstChild.style.border = '3px solid';
-      btn.firstChild.style.borderColor = 'rgb(6, 240, 15)';
+      btn.style.border = '3px solid';
+      btn.style.borderColor = 'rgb(6, 240, 15)';
     }
   };
 
-  childColor = (target) => {
-    const answerBtns = [...target.parentElement.children];
-    answerBtns.forEach((btn) => {
-      this.validateColor(btn);
-    });
-  };
-
   ownColor = (target) => {
-    const answerBtns = [...target.parentElement.parentElement.children];
+    const answerBtns = [...target.parentElement.children];
     answerBtns.forEach((btn) => {
       this.validateColor(btn);
     });
@@ -98,12 +89,7 @@ class Game extends React.Component {
     if (check === false) {
       this.setState({ check: true });
     }
-    
-    if (target.className.includes('answer')) {
-      this.ownColor(target);
-    } else {
-      this.childColor(target);
-    }
+    this.ownColor(target);
   };
 
   render() {
@@ -126,8 +112,10 @@ class Game extends React.Component {
                       <button
                         key={ index }
                         type="button"
+                        className="wrong-answer"
                         data-testid={ `wrong-answer-${index}` }
                         disabled={ answerDisabled }
+                        onClick={ this.answerBtn }
                       >
                         { result }
                       </button>
@@ -136,8 +124,10 @@ class Game extends React.Component {
                       <button
                         key={ index }
                         type="button"
+                        className="correct-answer"
                         data-testid="correct-answer"
                         disabled={ answerDisabled }
+                        onClick={ this.answerBtn }
                       >
                         { result }
                         {' '}
