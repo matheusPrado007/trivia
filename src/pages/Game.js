@@ -16,33 +16,66 @@ class Game extends React.Component {
     this.fetchQuestions(token);
   }
 
-  fetchQuestions = async (token) => {
+  responseValidation = () => {
     const { history: { push } } = this.props;
+    const { response, results } = this.state;
+    if (response !== 0) {
+      localStorage.clear('token');
+      push('/');
+    } else {
+      const answersList = [
+        ...results[0].incorrect_answers, results[0].correct_answer,
+      ];
+      const randomAux = 0.5;
+      const randomAnswers = answersList.sort(() => Math.random() - randomAux);
+      this.setState({ answers: randomAnswers });
+    } return results;
+  };
+
+  fetchQuestions = async (token) => {
     const request = await fetch(`https://opentdb.com/api.php?amount=5&token=${token}`);
     const data = await request.json();
+    console.log(data);
     this.setState({
       response: data.response_code,
       results: data.results,
-    }, () => {
-      const { response, results } = this.state;
-      if (response !== 0) {
-        localStorage.clear('token');
-        push('/');
-      } else {
-        const answersList = [
-          ...data.results[0].incorrect_answers, data.results[0].correct_answer,
-        ];
-        const randomAux = 0.5;
-        const randomAnswers = answersList.sort(() => Math.random() - randomAux);
-        this.setState({ answers: randomAnswers });
-      } return results;
+    }, () => { this.responseValidation(); });
+  };
+
+  validateColor = (btn) => {
+    if (btn.firstChild.className.includes('wrong')) {
+      btn.firstChild.style.border = '3px solid';
+      btn.firstChild.style.borderColor = 'red';
+    } else {
+      btn.firstChild.style.border = '3px solid';
+      btn.firstChild.style.borderColor = 'rgb(6, 240, 15)';
+    }
+  };
+
+  childColor = (target) => {
+    const answerBtns = [...target.parentElement.children];
+    answerBtns.forEach((btn) => {
+      this.validateColor(btn);
     });
   };
 
-  handleBtn = () => {
+  ownColor = (target) => {
+    const answerBtns = [...target.parentElement.parentElement.children];
+    answerBtns.forEach((btn) => {
+      this.validateColor(btn);
+    });
+  };
+
+  answerBtn = ({ target }) => {
     const { check } = this.state;
     if (check === false) {
-      return this.setState({ check: true });
+      this.setState({ check: true });
+    }
+    
+    if (target.className.includes('answer')) {
+      this.ownColor(target);
+    } else {
+      this.childColor(target);
     }
   };
 
@@ -62,17 +95,26 @@ class Game extends React.Component {
                     key={ result }
                     type="button"
                     data-testid="answer-options"
-                    onClick={ this.handleBtn }
+                    onClick={ this.answerBtn }
                   >
                     {
                       result !== results[0]
                         .correct_answer
                         ? (
-                          <p data-testid={ `wrong-answer-${index}` }>
+                          <p
+                            data-testid={ `wrong-answer-${index}` }
+                            className="wrong-answer"
+                          >
                             { result }
                           </p>
                         )
-                        : (<p data-testid="correct-answer">{ result }</p>)
+                        : (
+                          <p
+                            data-testid="correct-answer"
+                            className="correct-answer"
+                          >
+                            { result }
+                          </p>)
                     }
                   </button>
                 )) }
