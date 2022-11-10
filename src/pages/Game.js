@@ -8,12 +8,37 @@ class Game extends React.Component {
     response: '',
     results: [],
     answers: [],
+    timer: 30,
+    intervalID: '',
+    answerDisabled: false,
   };
 
   componentDidMount() {
     const token = localStorage.getItem('token');
     this.fetchQuestions(token);
+    const interval = 1000;
+    const intervalID = setInterval(this.timerAtualiza, interval);
+    this.setState({
+      intervalID,
+    });
   }
+
+  endInterval = () => {
+    const { timer, intervalID } = this.state;
+    if (timer === 0) {
+      clearInterval(intervalID);
+      this.setState({
+        answerDisabled: true,
+      });
+    }
+  };
+
+  timerAtualiza = () => {
+    const { timer } = this.state;
+    this.setState({
+      timer: timer - 1,
+    }, () => { this.endInterval(); });
+  };
 
   fetchQuestions = async (token) => {
     const { history: { push } } = this.props;
@@ -39,35 +64,44 @@ class Game extends React.Component {
   };
 
   render() {
-    const { results, answers } = this.state;
+    const { results, answers, timer, answerDisabled } = this.state;
     return (
       <>
         <Header />
         <div>
           { results.length > 0 && (
             <div>
+              <h1>Timer</h1>
+              <p>{ timer }</p>
               <p data-testid="question-category">{ results[0].category }</p>
               <p data-testid="question-text">{ results[0].question }</p>
-              <p>
+              <div data-testid="answer-options">
                 { answers.map((result, index = 0) => (
-                  <button
-                    key={ result }
-                    type="button"
-                    data-testid="answer-options"
-                  >
-                    {
-                      result !== results[0]
-                        .correct_answer
-                        ? (
-                          <p data-testid={ `wrong-answer-${index}` }>
-                            { result }
-                          </p>
-                        )
-                        : (<p data-testid="correct-answer">{ result }</p>)
-                    }
-                  </button>
+
+                  result !== results[0]
+                    .correct_answer
+                    ? (
+                      <button
+                        key={ index }
+                        type="button"
+                        data-testid={ `wrong-answer-${index}` }
+                        disabled={ answerDisabled }
+                      >
+                        { result }
+                      </button>
+                    )
+                    : (
+                      <button
+                        key={ index }
+                        type="button"
+                        data-testid="correct-answer"
+                        disabled={ answerDisabled }
+                      >
+                        { result }
+                        {' '}
+                      </button>)
                 )) }
-              </p>
+              </div>
             </div>
           ) }
         </div>
