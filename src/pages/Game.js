@@ -164,7 +164,7 @@ class Game extends React.Component {
   render() {
     const { results, answers, timer, answerDisabled, check, questionOrder } = this.state;
     return (
-      <>
+      <div>
         <Header />
         <div>
           { results.length > 0 && (
@@ -215,7 +215,7 @@ class Game extends React.Component {
             </div>
           ) }
         </div>
-      </>
+      </div>
     );
   }
 }
