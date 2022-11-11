@@ -38,6 +38,7 @@ class Login extends Component {
             placeholder="Qual é o seu nome?"
             data-testid="input-player-name"
             onChange={ this.handleChange }
+            value={ name }
           />
           <input
             name="email"
