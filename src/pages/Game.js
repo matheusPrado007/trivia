@@ -71,7 +71,7 @@ class Game extends React.Component {
     if (check === false) {
       this.setState({ check: true });
     }
-    
+
     if (target.className.includes('answer')) {
       this.ownColor(target);
     } else {
