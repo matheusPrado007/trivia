@@ -5,12 +5,12 @@ import Header from '../components/Header';
 
 class Feedback extends React.Component {
   render() {
-    const { assertions } = this.props;
+    const { asserts } = this.props;
     const MIN_ANSWERS = 3;
     return (
       <>
         <Header />
-        { assertions < MIN_ANSWERS
+        { asserts < MIN_ANSWERS
           ? <p data-testid="feedback-text">Could be better...</p>
           : <p data-testid="feedback-text">Well Done!</p>}
       </>
@@ -19,11 +19,11 @@ class Feedback extends React.Component {
 }
 
 const mapStateToProps = (state) => ({
-  assertions: state.player.assertions,
+  asserts: state.player.assertions,
 });
 
 Feedback.propTypes = {
-  assertions: PropTypes.number,
+  asserts: PropTypes.number,
 }.isRequired;
 
 export default connect(mapStateToProps)(Feedback);
