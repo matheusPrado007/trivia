@@ -144,6 +144,18 @@ class Game extends React.Component {
     });
   };
 
+  saveResults = () => {
+    const { score, name, gravatarEmail } = this.props;
+    const playerInfo = { score, name, gravatarEmail };
+    const storeInfo = JSON.parse(localStorage.getItem('players'));
+    if (storeInfo !== null) {
+      const newStoreInfo = JSON.stringify([...storeInfo, playerInfo]);
+      localStorage.setItem('players', newStoreInfo);
+    } else {
+      localStorage.setItem('players', JSON.stringify([playerInfo]));
+    }
+  };
+
   handleNext = () => {
     const { questionOrder } = this.state;
     const { history: { push } } = this.props;
@@ -157,6 +169,7 @@ class Game extends React.Component {
       }), () => { this.responseValidation(); });
       this.resetBorderAndTimer();
     } else {
+      this.saveResults();
       push('/feedback');
     }
   };
@@ -227,6 +240,8 @@ Game.propTypes = {
 const mapStateToProps = (state) => ({
   score: state.player.score,
   assertions: state.player.assertions,
+  gravatarEmail: state.player.gravatarEmail,
+  name: state.player.name,
 });
 
 export default connect(mapStateToProps)(Game);
