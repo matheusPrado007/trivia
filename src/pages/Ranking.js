@@ -7,7 +7,7 @@ import { actionCreator, CLEAR_SCORE } from '../redux/actions';
 class Ranking extends React.Component {
   state = {
     players: [],
-  }
+  };
 
   componentDidMount() {
     const players = JSON.parse(localStorage.getItem('players'));
@@ -17,7 +17,7 @@ class Ranking extends React.Component {
 
   handleBtn = () => {
     const { dispatch, history: { push } } = this.props;
-    dispatch(actionCreator(CLEAR_SCORE))
+    dispatch(actionCreator(CLEAR_SCORE));
     push('/');
   };
 
