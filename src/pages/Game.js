@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import Header from '../components/Header';
+import { actionCreator, GET_ANSWER } from '../redux/actions';
 
 class Game extends React.Component {
   state = {
@@ -12,6 +13,7 @@ class Game extends React.Component {
     intervalID: '',
     answerDisabled: false,
     check: false,
+    questionOrder: 0,
   };
 
   componentDidMount() {
@@ -60,11 +62,46 @@ class Game extends React.Component {
   fetchQuestions = async (token) => {
     const request = await fetch(`https://opentdb.com/api.php?amount=5&token=${token}`);
     const data = await request.json();
-    console.log(data);
     this.setState({
       response: data.response_code,
       results: data.results,
     }, () => { this.responseValidation(); });
+  };
+
+  bonusMultiplier = (dificulty) => {
+    const hardBonus = 3;
+    const mediumBonus = 2;
+    const easyBonus = 1;
+    if (dificulty === 'hard') {
+      return hardBonus;
+    }
+    if (dificulty === 'medium') {
+      return mediumBonus;
+    }
+    return easyBonus;
+  };
+
+  addScore = (target) => {
+    const { score, assertions, dispatch } = this.props;
+    const { results, questionOrder, timer } = this.state;
+    const { dificulty } = results[questionOrder];
+    let payload = {
+      score,
+      assertions,
+    };
+    const dificultyMultiplier = this.bonusMultiplier(dificulty);
+    if (target.className.includes('correct')) {
+      const basePoints = 10;
+      console.log(basePoints, timer, dificultyMultiplier);
+      const newScore = score + (basePoints + (timer * dificultyMultiplier));
+      payload = {
+        score: newScore,
+        assertions: assertions + 1,
+      };
+      dispatch(actionCreator(GET_ANSWER, payload));
+    } else {
+      dispatch(actionCreator(GET_ANSWER, payload));
+    }
   };
 
   validateColor = (btn) => {
@@ -85,15 +122,17 @@ class Game extends React.Component {
   };
 
   answerBtn = ({ target }) => {
-    const { check } = this.state;
+    const { check, intervalID } = this.state;
+    clearInterval(intervalID);
     if (check === false) {
       this.setState({ check: true });
     }
     this.ownColor(target);
+    this.addScore(target);
   };
 
   render() {
-    const { results, answers, timer, answerDisabled, check } = this.state;
+    const { results, answers, timer, answerDisabled, check, questionOrder } = this.state;
     return (
       <>
         <Header />
@@ -102,11 +141,11 @@ class Game extends React.Component {
             <div>
               <h1>Timer</h1>
               <p>{ timer }</p>
-              <p data-testid="question-category">{ results[0].category }</p>
-              <p data-testid="question-text">{ results[0].question }</p>
+              <p data-testid="question-category">{ results[questionOrder].category }</p>
+              <p data-testid="question-text">{ results[questionOrder].question }</p>
               <div data-testid="answer-options">
                 { answers.map((result, index = 0) => (
-                  result !== results[0]
+                  result !== results[questionOrder]
                     .correct_answer
                     ? (
                       <button
@@ -155,4 +194,9 @@ Game.propTypes = {
   push: PropTypes.func,
 }.isRequired;
 
-export default connect(null)(Game);
+const mapStateToProps = (state) => ({
+  score: state.player.score,
+  assertions: state.player.assertions,
+});
+
+export default connect(mapStateToProps)(Game);
