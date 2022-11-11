@@ -6,15 +6,12 @@ import { renderWithRouterAndRedux } from './helpers/renderWithRouterAndRedux';
 import App from '../App';
 
 describe('Pagina de Login', () => {
-  beforeEach(() => {
-    Object.defineProperty(window, "localStorage", {
-      value: {
-        getItem: jest.fn(() => null),
-        setItem: jest.fn(() => null)
-      },
-      writable: true
+  test('1- Verificar se ao carregar a pagina Login, contêm dois inputs e o button', async () => {
+    const { history } = renderWithRouterAndRedux(<App />);
+
+    act(() => {
+      history.push('/');
     });
-  });
 
   test('1- Verificar se ao carregar a pagina Login, contêm dois inputs e dois buttons', () => {
     const { history } = renderWithRouterAndRedux(<App />);
@@ -36,7 +33,6 @@ describe('Pagina de Login', () => {
     expect(inputEmail).toBeInTheDocument();
     userEvent.type(inputEmail, 'Joaozinho@trybe.com');
     expect(inputEmail.value).toBe('Joaozinho@trybe.com');
-
     expect(btnPlay).toHaveProperty('disabled', false);
 
     expect(history.location.pathname).toBe('/');
