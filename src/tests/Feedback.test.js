@@ -13,7 +13,7 @@ describe('Pagina de Login', () => {
       history.push('/feedback');
     });
 
-    const btnRanking= screen.getByRole('button', { name: 'Ver Ranking' });
+    const btnRanking= screen.getByRole('button', { name: /Ver Ranking/i });
     expect(btnRanking).toBeInTheDocument();
 
     userEvent.click(btnRanking);
