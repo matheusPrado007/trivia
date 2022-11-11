@@ -1,4 +1,4 @@
-import { LOGIN_INICIAL } from '../actions/index';
+import { GET_ANSWER, LOGIN_INICIAL } from '../actions/index';
 
 const INITIAL_STATE = {
   name: '',
@@ -13,6 +13,11 @@ const player = (state = INITIAL_STATE, action) => {
     return ({ ...state,
       name: action.payload.name,
       gravatarEmail: action.payload.email,
+    });
+  case (GET_ANSWER):
+    return ({
+      ...state,
+      ...action.payload,
     });
   default:
     return state;
