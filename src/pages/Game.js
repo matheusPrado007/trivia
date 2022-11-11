@@ -168,7 +168,7 @@ class Game extends React.Component {
                         disabled={ answerDisabled }
                         onClick={ this.answerBtn }
                       >
-                        { result }                
+                        { result }
                       </button>)
                 )) }
               </div>
