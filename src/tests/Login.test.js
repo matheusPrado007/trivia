@@ -1,6 +1,6 @@
 import React from 'react';
 import { act } from 'react-dom/test-utils';
-import { screen } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { renderWithRouterAndRedux } from './helpers/renderWithRouterAndRedux';
 import App from '../App';
@@ -13,30 +13,63 @@ describe('Pagina de Login', () => {
       history.push('/');
     });
 
+  test('1- Verificar se ao carregar a pagina Login, contêm dois inputs e dois buttons', () => {
+    const { history } = renderWithRouterAndRedux(<App />);
+
     expect(history.location.pathname).toBe('/');
 
-    const button = screen.getByRole('button', { name: 'Play' });
-    expect(button).toBeInTheDocument();
+    const btnPlay = screen.getByRole('button', { name: 'Play' });
+    expect(btnPlay).toBeInTheDocument();
 
-    expect(button).toHaveProperty('disabled', true);
+    expect(btnPlay).toHaveProperty('disabled', true);
 
     const inputPlayerName = screen.getByTestId('input-player-name');
     expect(inputPlayerName).toBeInTheDocument();
     userEvent.type(inputPlayerName, 'Joaozinho');
     expect(inputPlayerName.value).toBe('Joaozinho');
+    expect(btnPlay).toHaveProperty('disabled', true);
 
     const inputEmail = screen.getByTestId('input-gravatar-email');
     expect(inputEmail).toBeInTheDocument();
     userEvent.type(inputEmail, 'Joaozinho@trybe.com');
     expect(inputEmail.value).toBe('Joaozinho@trybe.com');
+    expect(btnPlay).toHaveProperty('disabled', false);
 
-    expect(button).toHaveProperty('disabled', false);
-
-    expect(button).toBeInTheDocument();
-    userEvent.click(button);
-    
-    const name = screen.findByText('Joaozinho');
-    expect(await name).toBeInTheDocument();
-    expect(history.location.pathname).toBe('/game');
+    expect(history.location.pathname).toBe('/');
   });
+
+  test('1.1 - Verificar se ao clicar no button configuracoes redireciona para pagina /settings', () => {
+    const { history } = renderWithRouterAndRedux(<App />);
+
+    act(() => {
+      history.push('/');
+    });
+
+    const btnConfig = screen.getByRole('button', { name: 'Configurações' });
+    expect(btnConfig).toBeInTheDocument();
+
+    userEvent.click(btnConfig);
+    expect(history.location.pathname).toBe('/settings');
+  });
+
+  test('1.2 - Verificar se ao clicar no button configuracoes redireciona para pagina /settings', async () => {
+    const { history } = renderWithRouterAndRedux(<App />);
+
+    expect(history.location.pathname).toBe('/');
+
+    const inputPlayerName = screen.getByPlaceholderText('Qual é o seu nome?');
+    userEvent.type(inputPlayerName, 'Joaozinho');
+    expect(inputPlayerName).toHaveValue('Joaozinho')
+    
+    const inputEmail = screen.getByPlaceholderText('Qual é o seu e-mail do gravatar?');
+    userEvent.type(inputEmail, 'Joaozinho@trybe.com');
+    expect(inputEmail).toHaveValue('Joaozinho@trybe.com')
+
+    const btnPlay = screen.getByRole('button', { name: /Play/i });
+    expect(btnPlay).toBeInTheDocument();
+  
+    userEvent.click(btnPlay);
+
+    await waitFor (() => expect(history.location.pathname).toBe('/game'), { timeout: 5000 });
+});
 });

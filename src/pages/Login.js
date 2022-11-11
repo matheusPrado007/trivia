@@ -35,12 +35,14 @@ class Login extends Component {
           <input
             name="name"
             type="text"
+            placeholder="Qual é o seu nome?"
             data-testid="input-player-name"
             onChange={ this.handleChange }
           />
           <input
             name="email"
             type="email"
+            placeholder="Qual é o seu e-mail do gravatar?"
             data-testid="input-gravatar-email"
             onChange={ this.handleChange }
           />
