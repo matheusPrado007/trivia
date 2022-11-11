@@ -1,4 +1,4 @@
-import { GET_ANSWER, LOGIN_INICIAL } from '../actions/index';
+import { GET_ANSWER, LOGIN_INICIAL, CLEAR_SCORE } from '../actions/index';
 
 const INITIAL_STATE = {
   name: '',
@@ -18,6 +18,11 @@ const player = (state = INITIAL_STATE, action) => {
     return ({
       ...state,
       ...action.payload,
+    });
+  case (CLEAR_SCORE):
+    return ({
+      ...state,
+      score: 0,
     });
   default:
     return state;
