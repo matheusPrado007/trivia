@@ -32,6 +32,7 @@ class Game extends React.Component {
       clearInterval(intervalID);
       this.setState({
         answerDisabled: true,
+        check: true,
       });
     }
   };
@@ -45,13 +46,14 @@ class Game extends React.Component {
 
   responseValidation = () => {
     const { history: { push } } = this.props;
-    const { response, results } = this.state;
+    const { response, results, questionOrder } = this.state;
     if (response !== 0) {
       localStorage.clear('token');
       push('/');
     } else {
       const answersList = [
-        ...results[0].incorrect_answers, results[0].correct_answer,
+        ...results[questionOrder].incorrect_answers,
+        results[questionOrder].correct_answer,
       ];
       const randomAux = 0.5;
       const randomAnswers = answersList.sort(() => Math.random() - randomAux);
@@ -92,14 +94,11 @@ class Game extends React.Component {
     const dificultyMultiplier = this.bonusMultiplier(dificulty);
     if (target.className.includes('correct')) {
       const basePoints = 10;
-      console.log(basePoints, timer, dificultyMultiplier);
       const newScore = score + (basePoints + (timer * dificultyMultiplier));
       payload = {
         score: newScore,
         assertions: assertions + 1,
       };
-      dispatch(actionCreator(GET_ANSWER, payload));
-    } else {
       dispatch(actionCreator(GET_ANSWER, payload));
     }
   };
@@ -128,7 +127,38 @@ class Game extends React.Component {
       this.setState({ check: true });
     }
     this.ownColor(target);
+    this.setState({ answerDisabled: true });
     this.addScore(target);
+  };
+
+  resetBorderAndTimer = () => {
+    const btns = document.querySelectorAll('.answerBtn');
+    btns.forEach((btn) => {
+      btn.style.removeProperty('border');
+      btn.style.removeProperty('borderColor');
+    });
+    const interval = 1000;
+    const intervalID = setInterval(this.timerAtualiza, interval);
+    this.setState({
+      intervalID,
+    });
+  };
+
+  handleNext = () => {
+    const { questionOrder } = this.state;
+    const { history: { push } } = this.props;
+    const maxAnswer = 4;
+    if (questionOrder < maxAnswer) {
+      this.setState((prev) => ({
+        questionOrder: prev.questionOrder + 1,
+        check: false,
+        answerDisabled: false,
+        timer: 30,
+      }), () => { this.responseValidation(); });
+      this.resetBorderAndTimer();
+    } else {
+      push('/feedback');
+    }
   };
 
   render() {
@@ -151,7 +181,7 @@ class Game extends React.Component {
                       <button
                         key={ index }
                         type="button"
-                        className="wrong-answer"
+                        className="wrong-answer answerBtn"
                         data-testid={ `wrong-answer-${index}` }
                         disabled={ answerDisabled }
                         onClick={ this.answerBtn }
@@ -163,12 +193,12 @@ class Game extends React.Component {
                       <button
                         key={ index }
                         type="button"
-                        className="correct-answer"
+                        className="correct-answer answerBtn"
                         data-testid="correct-answer"
                         disabled={ answerDisabled }
                         onClick={ this.answerBtn }
                       >
-                        { result }                
+                        { result }
                       </button>)
                 )) }
               </div>
@@ -177,6 +207,7 @@ class Game extends React.Component {
                   <button
                     type="button"
                     data-testid="btn-next"
+                    onClick={ this.handleNext }
                   >
                     Next
                   </button>
