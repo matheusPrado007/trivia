@@ -13,7 +13,7 @@ describe('Pagina de Login', () => {
       history.push('/feedback');
     });
 
-    const btnRanking= screen.getByRole('button', { name: 'Ver Ranking' });
+    const btnRanking= screen.getByRole('button', { name: /Ver Ranking/i });
     expect(btnRanking).toBeInTheDocument();
 
     userEvent.click(btnRanking);
@@ -55,8 +55,6 @@ describe('Pagina de Login', () => {
     act(() => { history.push('/game') })
     
     expect(history.location.pathname).toBe('/game');
-
-    console.log(store.getState().player.assertions)
 
     store.getState().player.assertions = 5
 
