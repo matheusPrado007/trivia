@@ -56,8 +56,6 @@ describe('Pagina de Login', () => {
     
     expect(history.location.pathname).toBe('/game');
 
-    console.log(store.getState().player.assertions)
-
     store.getState().player.assertions = 5
 
     act(() => { history.push('/feedback') })

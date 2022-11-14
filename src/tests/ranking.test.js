@@ -1,22 +1,57 @@
 import React from 'react';
 import { act } from 'react-dom/test-utils';
-import { fireEvent, screen, waitFor } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { renderWithRouterAndRedux } from './helpers/renderWithRouterAndRedux';
 import App from '../App';
-import store from '../redux/store';
 
-describe('Pagina de Login', () => {
-  test('1 - Verificar se aparece na tela botao VER RANKING e ele redireciona para /ranking', () => {
-    const { history } = renderWithRouterAndRedux(<App />);
+describe('Pagina de RANKING', () => {
+ test('1 - Verificar se aparece na tela os jogadores e o botao homepage e ele redireciona para /', () => {
+  const { history } = renderWithRouterAndRedux(<App />);
 
-    localStorage.setItem('players', 100)
-    console.log(localStorage.getItem('players'))
-    act(() => {
-      history.push('/ranking');
-    });
+    const PLAYERS = [{
+      name: 'joao',
+      score: '100',
+      gravatarEmail: '',
+    }, {
+      name: 'maria',
+      score: '200',
+      gravatarEmail: '',
+    }, {
+      name: 'cesar',
+      score: '150',
+      gravatarEmail: '',
+    }
+  ]
+  
+    localStorage.setItem('players', JSON.stringify(PLAYERS));  
+  
+    act(() => { history.push('/ranking') })
+    expect(history.location.pathname).toBe('/ranking');
 
-    const ranking = screen.getByText(/ranking/i)
-    expect(ranking).toBeInTheDocument();
- });
+    const rank = screen.getByText('Ranking')
+    expect(rank).toBeInTheDocument();
+
+    const playerScreen = screen.getByText('joao')
+    expect(playerScreen).toBeInTheDocument();
+
+    const scoreScreen = screen.getByText('100')
+    expect(scoreScreen).toBeInTheDocument();
+
+    const dataPlayer = screen.getByTestId('player-name-0')
+    expect(dataPlayer).toBeInTheDocument();
+  
+    const dataPlayer1 = screen.getByTestId('player-name-1')
+    expect(dataPlayer1).toBeInTheDocument();
+    
+    const dataScore = screen.getByTestId('player-score-0')
+    expect(dataScore).toBeInTheDocument();
+
+    const dataScore1 = screen.getByTestId('player-score-1')
+    expect(dataScore1).toBeInTheDocument();
+
+    const btnHomePage= screen.getByRole('button', { name: /Homepage/i });
+    userEvent.click(btnHomePage)
+    expect(history.location.pathname).toBe('/');
+});
 });
