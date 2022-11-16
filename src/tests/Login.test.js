@@ -4,6 +4,7 @@ import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { renderWithRouterAndRedux } from './helpers/renderWithRouterAndRedux';
 import App from '../App';
+import { tokenResponse } from './helpers/mocks';
 
 describe('Pagina de Login', () => {
   test('1- Verificar se ao carregar a pagina Login, contêm dois inputs e dois buttons', () => {
@@ -46,6 +47,10 @@ describe('Pagina de Login', () => {
   });
 
   test('1.2 - Verificar se ao clicar no button configuracoes redireciona para pagina /settings', async () => {
+    global.fetch = jest.fn(async () => ({
+      json: async () => btnPlay
+    }));
+    
     const { history } = renderWithRouterAndRedux(<App />);
 
     expect(history.location.pathname).toBe('/');

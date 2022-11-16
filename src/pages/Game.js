@@ -185,7 +185,7 @@ class Game extends React.Component {
               <p data-testid="question-category">{ results[questionOrder].category }</p>
               <p data-testid="question-text">{ results[questionOrder].question }</p>
               <div data-testid="answer-options">
-                { answers.map((result, index = 0) => (
+                { answers.map((result, index) => (
                   result !== results[questionOrder]
                     .correct_answer
                     ? (

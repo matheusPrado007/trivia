@@ -40,7 +40,7 @@ class Ranking extends React.Component {
         >
           Play Again
         </button>
-        { players.length > 0 ? players.map((info, index = 0) => (
+        { players.length > 0 ? players.map((info, index) => (
           <div key={ index }>
             <p
               data-testid={ `player-name-${index}` }

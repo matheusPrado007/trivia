@@ -191,7 +191,7 @@ describe('Pagina de Login', () => {
     expect(await screen.findByText('30')).toBeInTheDocument();
   });
 
-  test.skip('7 - Verificar se o timer zera e deixa os botões de resposta desabilitados', async () => {
+  test('7 - Verificar se o timer zera e deixa os botões de resposta desabilitados', async () => {
     global.fetch = jest.fn(async () => ({
       json: async () => questionsResponse
     }));
@@ -232,7 +232,7 @@ describe('Pagina de Login', () => {
 
   });
 
-  test.only('9 - Verificar se são geradas as quantidades corretas de botão de resposta', async () => {
+  test('9 - Verificar se são geradas as quantidades corretas de botão de resposta', async () => {
     global.fetch = jest.fn(async () => ({
       json: async () => questionsResponse
     }));
