@@ -86,15 +86,15 @@ class Game extends React.Component {
   addScore = (target) => {
     const { score, assertions, dispatch } = this.props;
     const { results, questionOrder, timer } = this.state;
-    const { dificulty } = results[questionOrder];
+    const { difficulty } = results[questionOrder];
     let payload = {
       score,
       assertions,
     };
-    const dificultyMultiplier = this.bonusMultiplier(dificulty);
+    const difficultyMultiplier = this.bonusMultiplier(difficulty);
     if (target.className.includes('correct')) {
       const basePoints = 10;
-      const newScore = score + (basePoints + (timer * dificultyMultiplier));
+      const newScore = score + (basePoints + (timer * difficultyMultiplier));
       payload = {
         score: newScore,
         assertions: assertions + 1,
@@ -121,11 +121,9 @@ class Game extends React.Component {
   };
 
   answerBtn = ({ target }) => {
-    const { check, intervalID } = this.state;
+    const { intervalID } = this.state;
     clearInterval(intervalID);
-    if (check === false) {
-      this.setState({ check: true });
-    }
+    this.setState({ check: true });
     this.ownColor(target);
     this.setState({ answerDisabled: true });
     this.addScore(target);
@@ -180,14 +178,14 @@ class Game extends React.Component {
       <div>
         <Header />
         <div>
-          { results.length > 0 && (
+          { results.length > 0 ? (
             <div>
               <h1>Timer</h1>
               <p>{ timer }</p>
               <p data-testid="question-category">{ results[questionOrder].category }</p>
               <p data-testid="question-text">{ results[questionOrder].question }</p>
               <div data-testid="answer-options">
-                { answers.map((result, index = 0) => (
+                { answers.map((result, index) => (
                   result !== results[questionOrder]
                     .correct_answer
                     ? (
@@ -226,7 +224,7 @@ class Game extends React.Component {
                   </button>
                 )}
             </div>
-          ) }
+          ) : <p>Carregando Perguntas...</p> }
         </div>
       </div>
     );
