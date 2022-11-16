@@ -127,18 +127,41 @@ describe('Pagina de Login', () => {
       history.push('/game');
     });
 
+    let score = 0;
+
     userEvent.click(await screen.findByTestId('correct-answer'));
-    const storeScoreQuestionOne = String(store.getState().player.score);
-    expect(screen.getByTestId('header-score').innerHTML).toBe(storeScoreQuestionOne);
+    const questionOneText = await screen.findByTestId('question-text');
+    const questionOneDificulty = questionsResponse.results.find((question) => (
+      question.question === questionOneText.innerHTML
+    )).difficulty;
+    let newScore = questionOneDificulty === 'easy' && 40;
+    score += newScore;
+    expect(screen.getByTestId('header-score').innerHTML).toBe(String(score));
     userEvent.click(await screen.findByTestId('btn-next'));
+
     userEvent.click(await screen.findByTestId('correct-answer'));
-    const storeScoreQuestionTwo = String(store.getState().player.score);
-    expect(screen.getByTestId('header-score').innerHTML).toBe(storeScoreQuestionTwo);
+    const questionTwoText = await screen.findByTestId('question-text');
+    const questionTwoDificulty = questionsResponse.results.find((question) => (
+      question.question === questionTwoText.innerHTML
+    )).difficulty;
+    newScore = questionTwoDificulty === 'hard' && 100;
+    score += newScore;
+    expect(screen.getByTestId('header-score').innerHTML).toBe(String(score));
     userEvent.click(await screen.findByTestId('btn-next'));
+
+    userEvent.click(await screen.findByTestId('correct-answer'));
+    const questionThreeText = await screen.findByTestId('question-text');
+    const questionThreeDificulty = questionsResponse.results.find((question) => (
+      question.question === questionThreeText.innerHTML
+    )).difficulty;
+    newScore = questionThreeDificulty === 'medium' && 70;
+    score += newScore;
+    expect(screen.getByTestId('header-score').innerHTML).toBe(String(score));
+    userEvent.click(await screen.findByTestId('btn-next'));
+
     userEvent.click(await screen.findByTestId('correct-answer'));
     userEvent.click(await screen.findByTestId('btn-next'));
-    userEvent.click(await screen.findByTestId('correct-answer'));
-    userEvent.click(await screen.findByTestId('btn-next'));
+
     userEvent.click(await screen.findByTestId('correct-answer'));
     userEvent.click(await screen.findByTestId('btn-next'));
   
@@ -187,5 +210,27 @@ describe('Pagina de Login', () => {
 
     await waitFor (() => expect(screen.getByTestId('correct-answer')).toBeDisabled(), { timeout: 2000 });
   }, 40000);
+
+  test('8 - Verificar se são geradas as quantidades corretas de botão de resposta', async () => {
+    global.fetch = jest.fn(async () => ({
+      json: async () => questionsResponse
+    }));
+    
+    const { history } = renderWithRouterAndRedux(<App />);
+
+    act(() => {
+      history.push('/game');
+    });
+
+    expect(await screen.findAllByRole('button')).toHaveLength(2);
+    expect(screen.queryByTestId('btn-next')).toBeNull();
+    userEvent.click(await screen.findByTestId('correct-answer'));
+    expect(screen.queryByTestId('btn-next')).toBeInTheDocument();
+
+    userEvent.click(await screen.findByTestId('btn-next'));
+
+    expect(await screen.findAllByRole('button')).toHaveLength(4);
+
+  });
 
 });

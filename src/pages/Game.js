@@ -86,15 +86,15 @@ class Game extends React.Component {
   addScore = (target) => {
     const { score, assertions, dispatch } = this.props;
     const { results, questionOrder, timer } = this.state;
-    const { dificulty } = results[questionOrder];
+    const { difficulty } = results[questionOrder];
     let payload = {
       score,
       assertions,
     };
-    const dificultyMultiplier = this.bonusMultiplier(dificulty);
+    const difficultyMultiplier = this.bonusMultiplier(difficulty);
     if (target.className.includes('correct')) {
       const basePoints = 10;
-      const newScore = score + (basePoints + (timer * dificultyMultiplier));
+      const newScore = score + (basePoints + (timer * difficultyMultiplier));
       payload = {
         score: newScore,
         assertions: assertions + 1,
