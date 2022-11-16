@@ -4,7 +4,6 @@ import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { renderWithRouterAndRedux } from './helpers/renderWithRouterAndRedux';
 import App from '../App';
-import Game from '../pages/Game';
 import { questionsResponse, invalidTokenQuestionsResponse, tokenResponse } from './helpers/mocks';
 
 describe('Pagina de Login', () => {
@@ -107,7 +106,7 @@ describe('Pagina de Login', () => {
       history.push('/game');
     });
     
-    await questions.forEach(async (question) => {
+    questions.forEach(async (question) => {
       const correctAnswer = await screen.findByTestId('correct-answer');
       userEvent.click(correctAnswer);
       userEvent.click(screen.getByText('Next'));
@@ -192,7 +191,7 @@ describe('Pagina de Login', () => {
     expect(await screen.findByText('30')).toBeInTheDocument();
   });
 
-  test('7 - Verificar se o timer zera e deixa os botões de resposta desabilitados', async () => {
+  test.skip('7 - Verificar se o timer zera e deixa os botões de resposta desabilitados', async () => {
     global.fetch = jest.fn(async () => ({
       json: async () => questionsResponse
     }));
@@ -233,4 +232,19 @@ describe('Pagina de Login', () => {
 
   });
 
+  test.only('9 - Verificar se são geradas as quantidades corretas de botão de resposta', async () => {
+    global.fetch = jest.fn(async () => ({
+      json: async () => questionsResponse
+    }));
+
+    const { history } = renderWithRouterAndRedux(<App />);
+
+    act(() => {
+      history.push('/game');
+    });
+
+    const loading = screen.getByText('Carregando Perguntas...');
+    expect(loading).toBeInTheDocument();
+
+  });
 });

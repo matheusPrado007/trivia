@@ -40,7 +40,7 @@ class Ranking extends React.Component {
         >
           Play Again
         </button>
-        { players.map((info, index = 0) => (
+        { players.length > 0 ? players.map((info, index = 0) => (
           <div key={ index }>
             <p
               data-testid={ `player-name-${index}` }
@@ -56,7 +56,7 @@ class Ranking extends React.Component {
               alt="Imagem do jogador"
               src={ `https://www.gravatar.com/avatar/${md5(info.gravatarEmail).toString()}` }
             />
-          </div>))}
+          </div>)) : <p>Carregando Jogadores...</p>}
       </div>
     );
   }

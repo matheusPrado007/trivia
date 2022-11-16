@@ -23,7 +23,9 @@ describe('Pagina de RANKING', () => {
       gravatarEmail: '',
     }
   ]
-  
+    expect(screen.getByText('Carregando Jogadores...')).toBeInTheDocument();
+
+
     localStorage.setItem('players', JSON.stringify(PLAYERS));  
   
     act(() => { history.push('/ranking') })
@@ -32,8 +34,8 @@ describe('Pagina de RANKING', () => {
     const rank = screen.getByText('Ranking')
     expect(rank).toBeInTheDocument();
 
-    const playerScreen = screen.getByText('joao')
-    expect(playerScreen).toBeInTheDocument();
+    const playerOneScreen = screen.getByText('joao')
+    expect(playerOneScreen).toBeInTheDocument();
 
     const scoreScreen = screen.getByText('100')
     expect(scoreScreen).toBeInTheDocument();

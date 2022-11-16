@@ -121,11 +121,9 @@ class Game extends React.Component {
   };
 
   answerBtn = ({ target }) => {
-    const { check, intervalID } = this.state;
+    const { intervalID } = this.state;
     clearInterval(intervalID);
-    if (check === false) {
-      this.setState({ check: true });
-    }
+    this.setState({ check: true });
     this.ownColor(target);
     this.setState({ answerDisabled: true });
     this.addScore(target);
@@ -180,7 +178,7 @@ class Game extends React.Component {
       <div>
         <Header />
         <div>
-          { results.length > 0 && (
+          { results.length > 0 ? (
             <div>
               <h1>Timer</h1>
               <p>{ timer }</p>
@@ -226,7 +224,7 @@ class Game extends React.Component {
                   </button>
                 )}
             </div>
-          ) }
+          ) : <p>Carregando Perguntas...</p> }
         </div>
       </div>
     );
