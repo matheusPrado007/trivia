@@ -5,10 +5,14 @@ import userEvent from '@testing-library/user-event';
 import { renderWithRouterAndRedux } from './helpers/renderWithRouterAndRedux';
 import App from '../App';
 import Game from '../pages/Game';
-import { questionsResponse, invalidTokenQuestionsResponse } from './helpers/mocks';
+import { questionsResponse, invalidTokenQuestionsResponse, tokenResponse } from './helpers/mocks';
 
 describe('Pagina de Login', () => {
   test('1 - Verificar se aparece na tela botao VER RANKING e ele redireciona para /ranking', async () => {
+    global.fetch = jest.fn(async () => ({
+      json: async () => tokenResponse
+    }));
+
     const { history } = renderWithRouterAndRedux(<App />);
 
     expect(history.location.pathname).toBe('/');
@@ -87,7 +91,7 @@ describe('Pagina de Login', () => {
       history.push('/game');
     });
     
-    setTimeout(() => { expect(historyPush).toHaveBeenCalledWith('/'); }, 3000)
+    await waitFor (() => expect(historyPush).toHaveBeenCalledWith('/'), { timeout: 4000 });
   });
 
   test('4 - Verificar se o botão Next redireciona para a página de feedback após o fim das perguntas', async () => {
@@ -110,6 +114,83 @@ describe('Pagina de Login', () => {
     });
 
     await waitFor (() => expect(history.location.pathname).toBe('/feedback'), { timeout: 4000 });
-
   });
+
+  test('5 - Verificar se a soma de pontos está correta e se botão Next redireciona para a página de feedback após o fim das perguntas', async () => {
+    global.fetch = jest.fn(async () => ({
+      json: async () => questionsResponse
+    }));
+    
+    const { history, store } = renderWithRouterAndRedux(<App />);
+
+    act(() => {
+      history.push('/game');
+    });
+
+    userEvent.click(await screen.findByTestId('correct-answer'));
+    const storeScoreQuestionOne = String(store.getState().player.score);
+    expect(screen.getByTestId('header-score').innerHTML).toBe(storeScoreQuestionOne);
+    userEvent.click(await screen.findByTestId('btn-next'));
+    userEvent.click(await screen.findByTestId('correct-answer'));
+    const storeScoreQuestionTwo = String(store.getState().player.score);
+    expect(screen.getByTestId('header-score').innerHTML).toBe(storeScoreQuestionTwo);
+    userEvent.click(await screen.findByTestId('btn-next'));
+    userEvent.click(await screen.findByTestId('correct-answer'));
+    userEvent.click(await screen.findByTestId('btn-next'));
+    userEvent.click(await screen.findByTestId('correct-answer'));
+    userEvent.click(await screen.findByTestId('btn-next'));
+    userEvent.click(await screen.findByTestId('correct-answer'));
+    userEvent.click(await screen.findByTestId('btn-next'));
+  
+    const storeScore = String(store.getState().player.score);
+    expect(screen.getByTestId('header-score').innerHTML).toBe(storeScore);
+
+    await waitFor (() => expect(history.location.pathname).toBe('/feedback'), { timeout: 4000 });
+  });
+
+  test('6 - Verificar se o timer está atualizando a cada 1 segundo, se após o clique na resposta o timer para de contar o tempo e se ele reseta ao clicar em next', async () => {
+    global.fetch = jest.fn(async () => ({
+      json: async () => questionsResponse
+    }));
+    
+    const { history } = renderWithRouterAndRedux(<App />);
+
+    act(() => {
+      history.push('/game');
+    });
+
+    expect(await screen.findByText('30')).toBeInTheDocument();
+    await waitFor (() => expect(screen.getByText('29')).toBeInTheDocument(), { timeout: 1000 });
+
+    userEvent.click(await screen.findByTestId('correct-answer'));
+    await waitFor (() => expect(screen.getByText('29')).toBeInTheDocument(), { timeout: 2000 });
+
+    userEvent.click(await screen.findByTestId('btn-next'));
+    expect(await screen.findByText('30')).toBeInTheDocument();
+  });
+
+  test('7 - Verificar se o timer zera e deixa os botões de resposta desabilitados', async () => {
+    global.fetch = jest.fn(async () => ({
+      json: async () => questionsResponse
+    }));
+    
+    const { history } = renderWithRouterAndRedux(<App />);
+
+    act(() => {
+      history.push('/game');
+    });
+
+    // await setTimeout(async () => {
+    //   expect(await screen.findByText('0')).toBeInTheDocument();
+    // }, 32000);
+
+    let timerValue = 30;
+    while(timerValue > 0) {
+      const valorDoTimer = await screen.findByText(timerValue);
+      timerValue = Number(valorDoTimer.innerHTML) - 1;
+    };
+
+    await waitFor (() => expect(screen.getByTestId('correct-answer')).toBeDisabled(), { timeout: 2000 });
+  }, 40000);
+
 });

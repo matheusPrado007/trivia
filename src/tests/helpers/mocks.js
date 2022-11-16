@@ -66,3 +66,5 @@ export const invalidTokenQuestionsResponse = {
   response_code: 3,
   results: [],
 }
+
+export const tokenResponse = 'f37be55b01f8c6d067ad42a579f32e3c63aefbf96cf3c9da0968fc57955b31aa';
