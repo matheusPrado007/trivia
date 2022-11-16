@@ -5,6 +5,7 @@ import userEvent from '@testing-library/user-event';
 import { renderWithRouterAndRedux } from './helpers/renderWithRouterAndRedux';
 import App from '../App';
 import Game from '../pages/Game';
+import { questionsResponse } from './helpers/mocks';
 
 describe('Pagina de Login', () => {
   test('1 - Verificar se aparece na tela botao VER RANKING e ele redireciona para /ranking', async () => {
@@ -25,7 +26,7 @@ describe('Pagina de Login', () => {
   
     userEvent.click(btnPlay);
 
-    await waitFor (() => expect(history.location.pathname).toBe('/game'), { timeout: 5000 });
+    await waitFor (() => expect(history.location.pathname).toBe('/game'), { timeout: 4000 });
 
     const namePlayer = screen.getByText('Joaozinho');
     expect(namePlayer).toBeInTheDocument();
@@ -35,6 +36,10 @@ describe('Pagina de Login', () => {
     
   });
   test('2 - Verificar se aparece na tela os botões das perguntas ao entrar na página de Game', async () => {
+    global.fetch = jest.fn(async () => ({
+      json: async () => questionsResponse
+    }));
+
     const { history } = renderWithRouterAndRedux(<App />);
 
     act(() => {
@@ -46,17 +51,19 @@ describe('Pagina de Login', () => {
     await waitFor (()=> expect(screen.getByTestId('correct-answer')).toBeInTheDocument(), { timeout: 1000 });
     
     const correct = screen.getByTestId('correct-answer');
+    expect(correct).toHaveTextContent('False');
 
     const wrongQuestions = screen.getAllByTestId(/wrong-answer/);
-    wrongQuestions.forEach((wrong) => { expect(wrong).toBeInTheDocument(); });
+    expect(wrongQuestions).toHaveLength(1);
+    expect(wrongQuestions[0]).toHaveTextContent('True');
     
-    
-    // const btnNext = screen.getByRole('button', { name: 'Next' });
-    // expect(btnNext).not.toBeInTheDocument();
+    const notBtnNext = screen.queryByRole('button', { name: 'Next' });
+    expect(notBtnNext).toBeNull();
 
-    // userEvent.click(correct);
+    userEvent.click(correct);
 
-    // expect(btnNext).toBeInTheDocument();
+    const btnNext = screen.queryByRole('button', { name: 'Next' });
+    expect(btnNext).toBeInTheDocument();
 
   });
 
