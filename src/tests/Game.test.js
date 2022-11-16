@@ -5,7 +5,7 @@ import userEvent from '@testing-library/user-event';
 import { renderWithRouterAndRedux } from './helpers/renderWithRouterAndRedux';
 import App from '../App';
 import Game from '../pages/Game';
-import { questionsResponse } from './helpers/mocks';
+import { questionsResponse, invalidTokenQuestionsResponse } from './helpers/mocks';
 
 describe('Pagina de Login', () => {
   test('1 - Verificar se aparece na tela botao VER RANKING e ele redireciona para /ranking', async () => {
@@ -62,9 +62,54 @@ describe('Pagina de Login', () => {
 
     userEvent.click(correct);
 
+    const correctBtnStyle = window.getComputedStyle(correct);
+    expect(correctBtnStyle.border).toBe('3px solid');
+    expect(correctBtnStyle['border-color']).toBe('rgb(6, 240, 15)');
+    
+    const wrongBtnStyle = window.getComputedStyle(wrongQuestions[0]);
+    expect(wrongBtnStyle.border).toBe('3px solid');
+    expect(wrongBtnStyle['border-color']).toBe('red');
+
     const btnNext = screen.queryByRole('button', { name: 'Next' });
     expect(btnNext).toBeInTheDocument();
 
   });
 
+  test('3 - Verificar se a tela do game volta para a página inicial caso a resposta da API for inválida', async () => {
+    global.fetch = jest.fn(async () => ({
+      json: async () => invalidTokenQuestionsResponse
+    }));
+    
+    const { history } = renderWithRouterAndRedux(<App />);
+    const historyPush = jest.spyOn(history, 'push');
+
+    act(() => {
+      history.push('/game');
+    });
+    
+    setTimeout(() => { expect(historyPush).toHaveBeenCalledWith('/'); }, 3000)
+  });
+
+  test('4 - Verificar se o botão Next redireciona para a página de feedback após o fim das perguntas', async () => {
+    global.fetch = jest.fn(async () => ({
+      json: async () => questionsResponse
+    }));
+    
+    const questions = questionsResponse.results;
+
+    const { history } = renderWithRouterAndRedux(<App />);
+
+    act(() => {
+      history.push('/game');
+    });
+    
+    await questions.forEach(async (question) => {
+      const correctAnswer = await screen.findByTestId('correct-answer');
+      userEvent.click(correctAnswer);
+      userEvent.click(screen.getByText('Next'));
+    });
+
+    await waitFor (() => expect(history.location.pathname).toBe('/feedback'), { timeout: 4000 });
+
+  });
 });
