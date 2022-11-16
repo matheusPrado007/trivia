@@ -11,7 +11,7 @@ class Ranking extends React.Component {
 
   componentDidMount() {
     const players = JSON.parse(localStorage.getItem('players'));
-    const order = players.sort((a, b) => b.score - a.score);
+    const order = (players !== null) ? players.sort((a, b) => b.score - a.score) : [];
     this.setState({ players: order });
   }
 
