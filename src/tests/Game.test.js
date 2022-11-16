@@ -180,15 +180,10 @@ describe('Pagina de Login', () => {
       history.push('/game');
     });
 
-    // await setTimeout(async () => {
-    //   expect(await screen.findByText('0')).toBeInTheDocument();
-    // }, 32000);
+    userEvent.click(await screen.findByTestId('correct-answer'));
+    userEvent.click(await screen.findByTestId('btn-next'));
 
-    let timerValue = 30;
-    while(timerValue > 0) {
-      const valorDoTimer = await screen.findByText(timerValue);
-      timerValue = Number(valorDoTimer.innerHTML) - 1;
-    };
+    await waitFor (() => expect(screen.getByText('0')).toBeInTheDocument(), { timeout: 32000 });
 
     await waitFor (() => expect(screen.getByTestId('correct-answer')).toBeDisabled(), { timeout: 2000 });
   }, 40000);
